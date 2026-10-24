@@ -4,161 +4,146 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Lato&family=Roboto+Mono&display=swap" rel="stylesheet" />
+  <meta name="description" content="A responsive, accessible music player built with vanilla JavaScript." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <title>
-    Build a Music Player App
-  </title>
+  <title>Music Player</title>
 </head>
 
 <body>
-  <div class="container">
-    <div class="player">
-      <div class="player-bar">
-        <div class="parallel-lines">
-          <div></div>
-          <div></div>
-        </div>
-        <h1 class="fcc-title">freeCodeCamp</h1>
-        <div class="parallel-lines">
-          <div></div>
-          <div></div>
-        </div>
-      </div>
+  <a class="skip-link" href="#playlist-songs">Skip to playlist</a>
+
+  <main class="container">
+    <!-- ============ PLAYER ============ -->
+    <section class="player" aria-label="Music player">
+      <header class="bar">
+        <div class="parallel-lines" aria-hidden="true"><div></div><div></div></div>
+        <h1 class="bar-title">Music Player</h1>
+        <div class="parallel-lines" aria-hidden="true"><div></div><div></div></div>
+      </header>
+
       <div class="player-content">
         <div id="player-album-art">
           <img src="https://cdn.freecodecamp.org/curriculum/js-music-player/quincy-larson-album-art.jpg"
-            alt="song cover art" />
+            alt="Album cover art" />
         </div>
+
         <div class="player-display">
           <div class="player-display-song-artist">
-            <p id="player-song-title"></p>
+            <p id="player-song-title">Select a song</p>
             <p id="player-song-artist"></p>
           </div>
-          <div class="player-buttons">
-            <button id="previous" class="previous" aria-label="Previous">
-              <svg width="24" height="19" viewBox="0 0 24 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M23.2248 0L7.03964 9.5L23.2248 19L23.2248 0Z" />
-                <rect width="4.63633" height="18.5453" transform="matrix(-1 0 0 1 4.63633 0)" />
-              </svg>
-            </button>
-            <button id="play" class="play" aria-label="Play">
-              <svg width="17" height="19" viewBox="0 0 17 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0 0L16.1852 9.5L1.88952e-07 19L0 0Z" />
-              </svg>
-            </button>
-            <button id="pause" class="pause" aria-label="Pause">
-              <svg width="17" height="19" viewBox="0 0 17 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0 6.54013e-07H4.75V19H0V6.54013e-07Z" />
-                <path d="M11.4 0H16.15V19H11.4V0Z" />
-              </svg>
-            </button>
-            <button id="next" class="next" aria-label="Next">
-              <svg width="24" height="19" viewBox="0 0 24 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0 0L16.1852 9.5L1.88952e-07 19L0 0Z" />
-                <rect x="18.5885" width="4.63633" height="18.5453" />
-              </svg>
-            </button>
-          </div>
+          <button id="favorite-current" class="icon-btn favorite-btn" aria-pressed="false"
+            aria-label="Add to favorites" title="Favorite (F)" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+          </button>
         </div>
       </div>
-    </div>
-    <div class="playlist">
-      <div class="playlist-bar">
-        <div class="parallel-lines">
-          <div></div>
-          <div></div>
-        </div>
-        <h2 class="playlist-title" id="playlist">Playlist</h2>
-        <div class="parallel-lines">
-          <div></div>
-          <div></div>
-        </div>
+
+      <!-- Progress / seeking -->
+      <div class="progress">
+        <span id="current-time" class="time" aria-hidden="true">0:00</span>
+        <input id="seek" class="range" type="range" min="0" max="1000" step="1" value="0"
+          aria-label="Seek" aria-valuetext="0:00 of 0:00" disabled />
+        <span id="total-time" class="time" aria-hidden="true">0:00</span>
       </div>
-      <ul id="playlist-songs">
-        <li id="song-0" class="playlist-song">
-          <button class="playlist-song-info" >
-            <span class="playlist-song-title">Scratching The Surface</span>
-            <span class="playlist-song-artist">Quincy Larson</span>
-            <span class="playlist-song-duration">4:25</span>
-          </button>
-        </li>
 
-        <li id="song-1" class="playlist-song">
-          <button class="playlist-song-info" >
-            <span class="playlist-song-title">Can't Stay Down</span>
-            <span class="playlist-song-artist">Quincy Larson</span>
-            <span class="playlist-song-duration">4:15</span>
-          </button>
-        </li>
+      <!-- Transport controls -->
+      <div class="player-buttons" role="group" aria-label="Playback controls">
+        <button id="shuffle" class="icon-btn toggle-btn" aria-pressed="false" aria-label="Shuffle off" title="Shuffle (S)">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <polyline points="16 3 21 3 21 8" /><line x1="4" y1="20" x2="21" y2="3" />
+            <polyline points="21 16 21 21 16 21" /><line x1="15" y1="15" x2="21" y2="21" />
+            <line x1="4" y1="4" x2="9" y2="9" />
+          </svg>
+        </button>
 
-        <li id="song-2" class="playlist-song">
-          <button class="playlist-song-info" >
-            <span class="playlist-song-title">Still Learning</span>
-            <span class="playlist-song-artist">Quincy Larson</span>
-            <span class="playlist-song-duration">3:51</span>
-          </button>
-        </li>
+        <button id="previous" class="icon-btn previous" aria-label="Previous song" title="Previous (P)">
+          <svg width="24" height="19" viewBox="0 0 24 19" aria-hidden="true">
+            <path d="M23.2248 0L7.03964 9.5L23.2248 19L23.2248 0Z" />
+            <rect width="4.63633" height="18.5453" transform="matrix(-1 0 0 1 4.63633 0)" />
+          </svg>
+        </button>
 
-        <li id="song-3" class="playlist-song">
-          <button class="playlist-song-info" >
-            <span class="playlist-song-title">Cruising for a Musing</span>
-            <span class="playlist-song-artist">Quincy Larson</span>
-            <span class="playlist-song-duration">3:34</span>
-          </button>
-        </li>
+        <button id="play" class="icon-btn play" aria-label="Play" title="Play (Space)">
+          <svg width="17" height="19" viewBox="0 0 17 19" aria-hidden="true">
+            <path d="M0 0L16.1852 9.5L1.88952e-07 19L0 0Z" />
+          </svg>
+        </button>
+        <button id="pause" class="icon-btn pause" aria-label="Pause" title="Pause (Space)" hidden>
+          <svg width="17" height="19" viewBox="0 0 17 19" aria-hidden="true">
+            <path d="M0 6.54013e-07H4.75V19H0V6.54013e-07Z" />
+            <path d="M11.4 0H16.15V19H11.4V0Z" />
+          </svg>
+        </button>
 
-        <li id="song-4" class="playlist-song">
-          <button class="playlist-song-info" >
-            <span class="playlist-song-title">Never Not Favored</span>
-            <span class="playlist-song-artist">Quincy Larson</span>
-            <span class="playlist-song-duration">3:35</span>
-          </button>
-        </li>
+        <button id="next" class="icon-btn next" aria-label="Next song" title="Next (N)">
+          <svg width="24" height="19" viewBox="0 0 24 19" aria-hidden="true">
+            <path d="M0 0L16.1852 9.5L1.88952e-07 19L0 0Z" />
+            <rect x="18.5885" width="4.63633" height="18.5453" />
+          </svg>
+        </button>
 
-        <li id="song-5" class="playlist-song">
-          <button class="playlist-song-info" >
-            <span class="playlist-song-title">From the Ground Up</span>
-            <span class="playlist-song-artist">Quincy Larson</span>
-            <span class="playlist-song-duration">3:12</span>
-          </button>
-        </li>
+        <button id="repeat" class="icon-btn toggle-btn" data-mode="off" aria-pressed="false"
+          aria-label="Repeat off" title="Repeat (R)">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <polyline points="17 1 21 5 17 9" /><path d="M3 11V9a4 4 0 0 1 4-4h14" />
+            <polyline points="7 23 3 19 7 15" /><path d="M21 13v2a4 4 0 0 1-4 4H3" />
+          </svg>
+        </button>
+      </div>
 
-        <li id="song-6" class="playlist-song">
-          <button class="playlist-song-info" >
-            <span class="playlist-song-title">Walking on Air</span>
-            <span class="playlist-song-artist">Quincy Larson</span>
-            <span class="playlist-song-duration">3:25</span>
-          </button>
-        </li>
+      <!-- Volume -->
+      <div class="volume">
+        <button id="mute" class="icon-btn" aria-label="Mute" aria-pressed="false" title="Mute (M)">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+            <g class="wave"><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /></g>
+            <g class="cross"><line x1="23" y1="9" x2="17" y2="15" /><line x1="17" y1="9" x2="23" y2="15" /></g>
+          </svg>
+        </button>
+        <input id="volume" class="range" type="range" min="0" max="100" step="1" value="80"
+          aria-label="Volume" aria-valuetext="80 percent" />
+        <span id="volume-value" class="time" aria-hidden="true">80%</span>
+      </div>
+    </section>
 
-        <li id="song-7" class="playlist-song">
-          <button class="playlist-song-info" >
-            <span class="playlist-song-title">Can't Stop Me. Can't Even Slow Me Down.</span>
-            <span class="playlist-song-artist">Quincy Larson</span>
-            <span class="playlist-song-duration">3:52</span>
-          </button>
-        </li>
+    <!-- ============ PLAYLIST ============ -->
+    <section class="playlist" aria-labelledby="playlist">
+      <header class="bar">
+        <div class="parallel-lines" aria-hidden="true"><div></div><div></div></div>
+        <h2 class="bar-title" id="playlist">Playlist</h2>
+        <div class="parallel-lines" aria-hidden="true"><div></div><div></div></div>
+      </header>
 
-        <li id="song-8" class="playlist-song">
-          <button class="playlist-song-info" >
-            <span class="playlist-song-title">The Surest Way Out is Through</span>
-            <span class="playlist-song-artist">Quincy Larson</span>
-            <span class="playlist-song-duration">3:10</span>
-          </button>
-        </li>
+      <div class="playlist-tools">
+        <div class="search">
+          <label for="search" class="sr-only">Search songs by title or artist</label>
+          <input id="search" type="search" placeholder="Search title or artist ( / )" autocomplete="off" />
+        </div>
+        <button id="favorites-filter" class="chip" aria-pressed="false">
+          <span aria-hidden="true">&#9829;</span> Favorites
+        </button>
+      </div>
 
-        <li id="song-9" class="playlist-song">
-          <button class="playlist-song-info" >
-            <span class="playlist-song-title">Chasing That Feeling</span>
-            <span class="playlist-song-artist">Quincy Larson</span>
-            <span class="playlist-song-duration">2:43</span>
-          </button>
-        </li>
-      </ul>
-    </div>
-  </div>
+      <p id="results-count" class="results-count" aria-live="polite"></p>
+      <ul id="playlist-songs"></ul>
+    </section>
+
+    <p class="hint">
+      Shortcuts: <kbd>Space</kbd> play/pause · <kbd>←</kbd><kbd>→</kbd> seek · <kbd>↑</kbd><kbd>↓</kbd> volume ·
+      <kbd>N</kbd>/<kbd>P</kbd> next/previous · <kbd>S</kbd> shuffle · <kbd>R</kbd> repeat · <kbd>M</kbd> mute ·
+      <kbd>F</kbd> favorite · <kbd>/</kbd> search
+    </p>
+  </main>
+
+  <!-- Screen-reader announcements -->
+  <div id="status" class="sr-only" role="status" aria-live="polite"></div>
+
   <script src="script.js"></script>
 </body>
 
